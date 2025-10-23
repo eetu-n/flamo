@@ -267,11 +267,11 @@ if __name__ == "__main__":
     V = V.reshape(16, -1)
     for i in range(16):
         ax = axs[i // 4, i % 4]
-        ax.plot(V[i, :].squeeze().numpy())
+        ax.plot(V[i, :].squeeze().cpu().numpy())
         ax.set_title(f"Subplot {i+1}")
     plt.show()
 
     plt.figure()
     for i in range(16):
-        plt.plot(V[i, :].squeeze().numpy(), alpha=0.5)
+        plt.plot(V[i, :].squeeze().cpu().numpy(), alpha=0.5)
     plt.show()

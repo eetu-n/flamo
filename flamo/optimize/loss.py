@@ -710,7 +710,7 @@ class edc_loss(nn.Module):
         impulse[0] = 1.0
         filter = torch.tensor(
             pf.dsp.filter.fractional_octave_bands(
-                pf.Signal(impulse.numpy(), self.sample_rate),
+                pf.Signal(impulse.cpu().numpy(), self.sample_rate),
                 num_fractions=self.n_fractions,
                 frequency_range=(63, 16000),
             ).freq.T
