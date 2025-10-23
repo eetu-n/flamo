@@ -24,8 +24,8 @@ class Trainer:
             - **patience_delta** (float): Minimum improvement in validation loss to be considered as an improvement. Default: 0.01.
             - **step_size** (int): Period of learning rate decay. Default: 50.
             - **step_factor** (float): Multiplicative factor of learning rate decay. Default: 0.1.
-            - **train_dir** (str): The directory for saving training outputs. Default: None.
-            - **device** (str): Device to use for training. Default: 'cpu'.
+            - **train_dir** (str): The directory for saving training outputs if left as None, output will not be saved. Default: None.
+            - **device** (str): Device to use for training. Default: torch_get_default_device().
 
         **Attributes**:
             - **min_val_loss** (float): Minimum validation loss to be updated by the early stopper.
@@ -55,7 +55,7 @@ class Trainer:
         step_size: int = 50,
         step_factor: float = 0.1,
         train_dir: str = None,
-        device: str = "cpu",
+        device: torch.device = torch.get_default_device(),
     ):
 
         self.device = device
@@ -68,9 +68,11 @@ class Trainer:
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=self.lr)
         self.n_loss = 0
 
-        assert os.path.isdir(
-            train_dir
-        ), "The directory specified in train_dir does not exist."
+        if train_dir is not None:
+            assert os.path.isdir(
+                train_dir
+            ), "The directory specified in train_dir does not exist."
+        
         self.train_dir = train_dir
 
         self.criterion, self.alpha, self.requires_model = (
@@ -141,7 +143,9 @@ class Trainer:
             self.print_results(epoch, et_epoch - st_epoch)
 
             # save checkpoints
-            self.save_model(epoch)
+            if self.train_dir is not None:
+                self.save_model(epoch)
+
             if self.early_stop():
                 print("Early stopping at epoch: {}".format(epoch))
                 break
